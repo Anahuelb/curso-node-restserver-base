@@ -54,6 +54,7 @@ const userPut = async (req = request, res = response) => {
 
 const userDelete = async (req, res = response) => {
   const { id } = req.params;
+  const userFrom = req.userFrom;
   //phisical delete
   // await User.findByIdAndDelete(id);
   //desactivate user
@@ -61,6 +62,7 @@ const userDelete = async (req, res = response) => {
   res.json({
     message: `user ${id} - deleted`,
     user,
+    userFrom,
   });
 };
 

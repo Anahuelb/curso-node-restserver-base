@@ -7,12 +7,20 @@ const {
   userDelete,
   userGet,
 } = require("../controllers/user.controller");
+
+const {
+  validateFields,
+  validateJwt,
+  OnlyAdminRole,
+  isInRole,
+  OnlyAdminRoleOrOwner,
+} = require("../middlewares");
+
 const {
   uniqueEmailValidation,
   validRoleValidation,
   existUserIdValidation,
 } = require("../helpers/db-validators");
-const { validateFields } = require("../middlewares/validate-fields");
 
 const router = Router();
 
@@ -37,7 +45,6 @@ router.post(
     check("password", "password must be at least 6 characters").isLength({
       min: 6,
     }),
-    // check("role", "role not allowed").isIn(["USER", "ADMIN"]),
     check("role").custom(validRoleValidation),
     validateFields,
   ],
@@ -47,6 +54,9 @@ router.post(
 router.put(
   "/:id",
   [
+    validateJwt,
+    // isInRole("ADMIN_ROLE", "USER_ROLE"),
+    OnlyAdminRoleOrOwner,
     check("id", "No es un Id valido").isMongoId(),
     check("id").custom(existUserIdValidation),
     check("role").custom(validRoleValidation),
@@ -58,6 +68,8 @@ router.put(
 router.delete(
   "/:id",
   [
+    validateJwt,
+    OnlyAdminRole,
     check("id", "No es un Id valido").isMongoId(),
     check("id").custom(existUserIdValidation),
     validateFields,
